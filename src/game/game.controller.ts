@@ -49,4 +49,9 @@ export class GameController {
       throw error;
     }
   }
+
+  @Post('reset')
+  resetGame() {
+    this.gameService.resetGame();
+  }
 }
