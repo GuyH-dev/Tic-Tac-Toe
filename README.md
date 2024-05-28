@@ -1,73 +1,263 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Tic-Tac-Toe Game
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+A real-time Tic-Tac-Toe game built with NestJS. Two players can play against each other, making moves from different
+clients and seeing the game state updated in real-time.
 
-## Installation
+## Project Structure
 
-```bash
-$ yarn install
+The game is structured as follows:
+
+### Entities
+
+- **Player**: Represents a player in the game with an `id` and a `symbol` ('X' or 'O').
+- **Move**: Represents a move made by a player with `playerId` and `position`.
+- **GameState**: Represents the current state of the game, including the `board`, `currentPlayer`, `winner`, and a list
+  of `moves`.
+
+### Game Logic
+
+- **GameService**: Handles the main game logic, including player registration, making moves, switching players, checking
+  for win conditions, and getting the game state.
+
+### Controllers
+
+- **GameController**: Exposes endpoints for registering players, making moves, getting the current game state, and
+  getting the current players.
+
+## Endpoints
+
+### Register a Player
+
+**Endpoint**: `POST /game/register`
+
+**Description**: Registers a new player in the game. Only two players can be registered, and each must have a unique
+symbol ('X' or 'O').
+
+**Request Body**:
+
+```json
+{
+  "symbol": "X"
+}
 ```
 
-## Running the app
+**Response**:
 
-```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+```json
+{
+  "id": "1",
+  "symbol": "X"
+}
 ```
 
-## Test
+Error:
 
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+```json
+{
+  "message": "Only two players can play the game at a time."
+}
 ```
 
-## Support
+or
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```json
+{
+  "message": "Player with symbol X is already registered."
+}
+```
 
-## Stay in touch
+### Make a Move
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+**Endpoint**: `POST /game/move`
 
-## License
+**Description**: Makes a move in the game for a player. The game state is updated, and a win condition is checked after
+each move.
 
-Nest is [MIT licensed](LICENSE).
+**Request Body**:
+
+```json
+{
+  "playerId": "1",
+  "position": 0
+}
+```
+
+**Response**:
+
+```json
+{
+  "gameState": {
+    "board": [
+      null,
+      null,
+      null,
+      null,
+      "X",
+      null,
+      null,
+      null,
+      null
+    ],
+    "currentPlayer": {
+      "id": "2",
+      "symbol": "O"
+    },
+    "winner": null,
+    "moves": [
+      {
+        "playerId": "1",
+        "position": 4
+      }
+    ]
+  },
+  "message": "Move accepted"
+}
+```
+
+Error:
+
+```json
+{
+  "gameState": {
+    ...
+  },
+  "message": "Invalid move"
+}
+```
+
+or
+
+```json
+{
+  "gameState": {
+    ...
+  },
+  "message": "Not your turn"
+}
+```
+
+Win condition:
+
+```json
+{
+  "gameState": {
+    "board": ["X", "X", "X", null, null, null, null, null, null],
+    "currentPlayer": {
+      "id": "1",
+      "symbol": "X"
+    },
+    "winner": {
+      "id": "1",
+      "symbol": "X"
+    },
+    "moves": [
+      {
+        "playerId": "1",
+        "position": 0
+      },
+      {
+        "playerId": "1",
+        "position": 1
+      },
+      {
+        "playerId": "1",
+        "position": 2
+      }
+    ]
+  },
+  "message": "Winner player X"
+}
+
+```
+
+### Get Game State
+
+**Endpoint**: `GET /game/state`
+
+**Description**: Retrieves the current state of the game.
+
+**Response**:
+
+```json
+{
+  "board": [null, null, null, null, "X", null, null, null, null],
+  "currentPlayer": {
+    "id": "2",
+    "symbol": "O"
+  },
+  "winner": null,
+  "moves": [
+    {
+      "playerId": "1",
+      "position": 4
+    }
+  ]
+}
+
+```
+
+### Get Players
+**Endpoint**: `GET /game/players`
+
+**Description**: Retrieves the current players in the game.
+
+**Response**:
+
+```json
+[
+  {
+    "id": "1",
+    "symbol": "X"
+  },
+  {
+    "id": "2",
+    "symbol": "O"
+  }
+]
+```
+### Basic Flow
+
+**1. Register Players**
+* Players register by sending a POST /game/register request with their symbol ('X' or 'O'). 
+* The server ensures that only two players can register and that each player has a unique symbol.
+**2. Make Moves**
+* Players make moves by sending a POST /game/move request with their player ID and the position they want to mark.
+* The server updates the game state and checks for a win condition after each move. If a player wins, a message indicating the winner is returned.
+**3. Game State**
+* The current game state can be retrieved at any time by sending a GET /game/state request.
+**4. Get Players**
+* The current players can be retrieved by sending a GET /game/players request.
+
+### Win Condition
+The win condition is checked after each move by comparing the current board state against predefined winning patterns (rows, columns, diagonals).
+If a player has three of their symbols in one of these patterns, they are declared the winner.
+
+### Running the Project
+
+**Prerequisites**:
+- Node.js and npm installed
+- NestJS CLI installed (npm i -g @nestjs/cli)
+
+**Installation**:
+1. Clone the repository
+
+```sh
+git clone <repository-url>
+cd tic-tac-toe
+```
+2. Install dependencies
+
+```sh
+npm install
+```
+
+3. Start the server
+
+```sh
+npm run start
+```
+
+4. Interact with the game using Postman:
+Use the provided endpoints to register players, make moves, and retrieve the game state and players.
