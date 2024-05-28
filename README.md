@@ -244,7 +244,7 @@ If a player has three of their symbols in one of these patterns, they are declar
 1. Clone the repository
 
 ```sh
-git clone <repository-url>
+git clone https://github.com/GuyH-dev/Tic-Tac-Toe.git
 cd tic-tac-toe
 ```
 2. Install dependencies
